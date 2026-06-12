@@ -1,1 +1,419 @@
+using System;
+using System.Linq;
+using System.Xml.Linq;
+namespace NutritionExam
+{    
+    public class NutritionLogic
+    {
+        /// <summary>
+        ///  принаймі 1 перевищує норму
+        /// </summary>
+        /// <param name="patiens"></param> Patient: Id,LastName,CarbsNorm,ProteinsNorm,FatsNorm
+        /// <param name="products"></param> Id, Name,CarbsPr,ProteinsPr,FatsPr
+        /// <returns></returns> Date("yyyy-MM-dd"),PatientId,ProductId,WeightCons
+        /// flDt={PatientLN,Date,ProductN,
+        ///secondMerge=>get sum and compare
+       public static XElement GetPatientStatistic(IEnumerable<XElement> patients, IEnumerable<XElement> products, IEnumerable<XElement> infos)
+        {
+            var flatData = from i in infos
+                           join pt in patients on (int)i.Element("PatientId")! equals (int)pt.Element("Id")!
+                           join pr in products on (int)i.Element("ProductId")! equals (int)pr.Element("Id")!
+                           select new
+                           {
+                               PatientLN = (string)pt.Element("LastName")!,
+                               Date = (DateTime)i.Element("Date")!,
+                               DayCarbAm = (decimal)i.Element("WeightCons")! * (decimal)pr.Element("CarbsPr")!,
+                               DayPrAm = (decimal)i.Element("WeightCons")! * (decimal)pr.Element("ProteinsPr")!,
+                               DayFtAm = (decimal)i.Element("WeightCons")! * (decimal)pr.Element("FatsPr")!,
+                               CarbsNorm = (decimal)pt.Element("CarbsNorm")!,
+                               ProteinsNorm = (decimal)pt.Element("ProteinsNorm")!,
+                               FatsNorm = (decimal)pt.Element("FatsNorm")!
+                           };
+            var eachPatient = from f in flatData
+                              group f by new { f.PatientLN, f.Date } into PatGr
+                              let SumCarbs = PatGr.Sum(x => x.DayCarbAm)
+                              let SumProteins = PatGr.Sum(x => x.DayPrAm)
+                              let SumFats = PatGr.Sum(x => x.DayFtAm)
+                              let patient = PatGr.First()
+                              where SumCarbs>patient.CarbsNorm || SumProteins>patient.ProteinsNorm||SumFats>patient.FatsNorm
+                              select new
+                              {
+                                  PatientLastName = PatGr.Key.PatientLN,
+                                  DatePt = PatGr.Key.Date
+                              };
+            var finalMerge = from e in eachPatient
+                             group e by e.PatientLastName into PtGroup
+                             orderby PtGroup.Key ascending
+                             select new XElement("Patients",
+                            new XElement("Patient", PtGroup.Key),
+                            from p in PtGroup
+                            orderby p.DatePt ascending
+                            select new XElement("Date", p.DatePt.ToString("yyyy-MM-dd"))
+                             );
+            return new XElement("PatientStat", finalMerge);
+
+        }
+        /// <summary>
+        /// flatDat=> PrName,for each PR (x=>x.WeightCons) patient=>persWeight=Max(x=>x.WeightCons)
+        /// </summary>
+        /// <param name="patients"></param>
+        /// <param name="products"></param>
+        /// <param name="infos"></param>
+        /// <returns></returns>
+        public static XElement GetProductStat(IEnumerable<XElement> patients, IEnumerable<XElement> products, IEnumerable<XElement> infos)
+        {
+            var flatData = from i in infos
+                           join pt in patients on (int)i.Element("PatientId")! equals (int)pt.Element("Id")!
+                           join pr in products on (int)i.Element("ProductId")! equals (int)pr.Element("Id")!
+                           select new
+                           {
+                               PtLastName = (string)pt.Element("LastName")!,
+                               PrName = (string)pr.Element("Name")!,
+                               WeightCons = (decimal)i.Element("WeightCons")!
+                           };
+            var eachProduct = from f in flatData
+                              group f by new { f.PrName, f.PtLastName } into ProductGroup
+                              let PerCons = ProductGroup.Sum(x => x.WeightCons)
+                              select new
+                              {
+                                  PatLastName = ProductGroup.Key.PtLastName,
+                                  ProdName = ProductGroup.Key.PrName,
+                                  PersonalConWg = PerCons
+                              };
+            var finalMerge = from e in eachProduct
+                             group e by e.ProdName into ProductNGr
+                             orderby ProductNGr.Key ascending
+                             let TotalGrWeight = ProductNGr.Sum(x => x.PersonalConWg)
+                             let MaxConPer = ProductNGr.Max(x => x.PersonalConWg)
+                             
+                             select new XElement("Product",
+                             new XElement("Name", ProductNGr.Key),
+                             new XElement("TotalConsumedGrWeight", TotalGrWeight),
+                             from p in ProductNGr
+                            
+                 
+                              where p.PersonalConWg == MaxConPer
+                              orderby p.PatLastName ascending
+                             select new XElement("Patient",
+                             new XElement("LastName", p.PatLastName),
+                             new XElement("MaxConsu", p.PersonalConWg)
+                             )
+
+                           );
+            return new XElement("ProductStat", finalMerge);
+        }
+    }
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var patients = XDocument.Load("patients.xml").Descendants("Patient");
+            var products = XDocument.Load("products.xml").Descendants("Product");
+            var info1 = XDocument.Load("info1.xml").Descendants("Info");
+            var info2 = XDocument.Load("info2.xml").Descendants("Info");
+            var infos = info1.Concat(info2);
+            var taskA = NutritionLogic.GetPatientStatistic(patients, products, infos);
+            var taskB = NutritionLogic.GetProductStat(patients, products, infos);
+            string pathA = "D:\\Users\\LEGEND\\source\\repos\\NutritionExam\\NutritionExam\\TaskA.xml";
+            string pathB = "D:\\Users\\LEGEND\\source\\repos\\NutritionExam\\NutritionExam\\TaskB.xml";
+            taskA.Save(pathA);
+            taskB.Save(pathB);
+            Console.WriteLine(taskA.ToString());
+            Console.WriteLine(taskB.ToString());
+
+        }
+    }
+}
+PATIENTS
+<?xml version="1.0" encoding="utf-8" ?>
+<Patients>
+	<Patient>
+		<Id>1</Id>
+		<LastName>Verbova</LastName>
+		<CarbsNorm>20</CarbsNorm>
+		<ProteinsNorm>50</ProteinsNorm>
+		<FatsNorm>29</FatsNorm>
+	</Patient>
+	<Patient>
+		<Id>2</Id>
+		<LastName>Aue</LastName>
+		<CarbsNorm>60</CarbsNorm>
+		<ProteinsNorm>30</ProteinsNorm>
+		<FatsNorm>79</FatsNorm>
+	</Patient>
+</Patients>
+PRODUCTS
+<?xml version="1.0" encoding="utf-8" ?>
+ <Products>
+	<Product>
+		<Id>1</Id>
+		<Name>Bread</Name>
+		<CarbsPr>0.9</CarbsPr>
+		<ProteinsPr>0.4</ProteinsPr>
+		<FatsPr>0.3</FatsPr>
+	</Product>
+	<Product>
+		<Id>2</Id>
+		<Name>Apple</Name>
+		<CarbsPr>0.3</CarbsPr>
+		<ProteinsPr>0.4</ProteinsPr>
+		<FatsPr>0.9</FatsPr>
+	</Product>
+</Products>
+INFO 1-2
+<?xml version="1.0" encoding="utf-8" ?>
+<Infos>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>1</PatientId>
+		<ProductId>1</ProductId>
+		<WeightCons>10</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>1</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>10</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>11</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>700</WeightCons>
+	</Info>
+</Infos>
+<?xml version="1.0" encoding="utf-8" ?>
+<Infos>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>1</PatientId>
+		<ProductId>1</ProductId>
+		<WeightCons>50</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>1</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>50</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>2</PatientId>
+		<ProductId>1</ProductId>
+		<WeightCons>500</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>300</WeightCons>
+	</Info>
+</Infos>
+
+TASKa:
+<?xml version="1.0" encoding="utf-8"?>
+<PatientStat>
+  <Patients>
+    <Patient>Aue</Patient>
+    <Date>2026-06-03</Date>
+    <Date>2026-06-06</Date>
+  </Patients>
+  <Patients>
+    <Patient>Verbova</Patient>
+    <Date>2026-06-06</Date>
+  </Patients>
+</PatientStat>
+
+TaskB:
+<?xml version="1.0" encoding="utf-8"?>
+<ProductStat>
+  <Product>
+    <Name>Apple</Name>
+    <TotalConsumedGrWeight>1071</TotalConsumedGrWeight>
+    <Patient>
+      <LastName>Aue</LastName>
+      <MaxConsu>1011</MaxConsu>
+    </Patient>
+  </Product>
+  <Product>
+    <Name>Bread</Name>
+    <TotalConsumedGrWeight>560</TotalConsumedGrWeight>
+    <Patient>
+      <LastName>Aue</LastName>
+      <MaxConsu>500</MaxConsu>
+    </Patient>
+  </Product>
+</ProductStat>
+
+Testing
+using System.Xml.Linq;
+
+namespace NutritionTesting
+{
+
+    public class NutritionFixture
+    {
+     public   IEnumerable<XElement> Patients { get; private set; }
+     public IEnumerable<XElement> Products { get; private set; }
+     public IEnumerable<XElement> Info1 { get; private set; }
+     public IEnumerable<XElement> Info2 { get; private set; }
+      public IEnumerable<XElement> Infos { get; private set; }
+
+        public NutritionFixture()
+        {
+            Patients = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<Patients>
+	<Patient>
+		<Id>1</Id>
+		<LastName>Verbova</LastName>
+		<CarbsNorm>20</CarbsNorm>
+		<ProteinsNorm>50</ProteinsNorm>
+		<FatsNorm>29</FatsNorm>
+	</Patient>
+	<Patient>
+		<Id>2</Id>
+		<LastName>Aue</LastName>
+		<CarbsNorm>60</CarbsNorm>
+		<ProteinsNorm>30</ProteinsNorm>
+		<FatsNorm>79</FatsNorm>
+	</Patient>
+	
+</Patients>").Descendants("Patient");
+			Products = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8"" ?>
+ <Products>
+	<Product>
+		<Id>1</Id>
+		<Name>Bread</Name>
+		<CarbsPr>0.9</CarbsPr>
+		<ProteinsPr>0.4</ProteinsPr>
+		<FatsPr>0.3</FatsPr>
+	</Product>
+	<Product>
+		<Id>2</Id>
+		<Name>Apple</Name>
+		<CarbsPr>0.3</CarbsPr>
+		<ProteinsPr>0.4</ProteinsPr>
+		<FatsPr>0.9</FatsPr>
+	</Product>
+
+</Products>").Descendants("Product");
+			Info1 = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<Infos>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>1</PatientId>
+		<ProductId>1</ProductId>
+		<WeightCons>10</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>1</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>10</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>11</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>700</WeightCons>
+	</Info>
+</Infos>").Descendants("Info");
+			Info2 = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<Infos>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>1</PatientId>
+		<ProductId>1</ProductId>
+		<WeightCons>50</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>1</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>50</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>2</PatientId>
+		<ProductId>1</ProductId>
+		<WeightCons>500</WeightCons>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<WeightCons>300</WeightCons>
+	</Info>
+</Infos>").Descendants("Info");
+			Infos = Info1.Concat(Info2);
+
+        }
+    }
+
+    public class NutTesting:IClassFixture<NutritionFixture>
+    {
+         private readonly NutritionFixture _fixture;
+		 public NutTesting(NutritionFixture fixture)
+		{
+			_fixture = fixture;
+
+		}
+        [Fact]
+        public void Test1()
+        {
+			var exTree = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8""?>
+<PatientStat>
+  <Patients>
+    <Patient>Aue</Patient>
+    <Date>2026-06-03</Date>
+    <Date>2026-06-06</Date>
+  </Patients>
+  <Patients>
+    <Patient>Verbova</Patient>
+    <Date>2026-06-06</Date>
+  </Patients>
+</PatientStat>");
+			var actTree = NutritionExam.NutritionLogic.GetPatientStatistic(_fixture.Patients, _fixture.Products, _fixture.Infos);
+			Assert.True(XNode.DeepEquals(exTree, actTree));
+        }
+        [Fact]
+        public void Test2()
+        {
+            var exTree = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ProductStat>
+  <Product>
+    <Name>Apple</Name>
+    <TotalConsumedGrWeight>1071</TotalConsumedGrWeight>
+    <Patient>
+      <LastName>Aue</LastName>
+      <MaxConsu>1011</MaxConsu>
+    </Patient>
+  </Product>
+  <Product>
+    <Name>Bread</Name>
+    <TotalConsumedGrWeight>560</TotalConsumedGrWeight>
+    <Patient>
+      <LastName>Aue</LastName>
+      <MaxConsu>500</MaxConsu>
+    </Patient>
+  </Product>
+</ProductStat>");
+            var actTree = NutritionExam.NutritionLogic.GetProductStat(_fixture.Patients, _fixture.Products, _fixture.Infos);
+            Assert.True(XNode.DeepEquals(exTree, actTree));
+        }
+    }
+}
 
