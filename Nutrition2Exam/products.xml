@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Products>
+	<Product>
+		<Id>1</Id>
+		<Name>Nut</Name>
+		<CarbsPr>0.30</CarbsPr>
+		<ProteinsPr>0.40</ProteinsPr>
+		<FatsPr>0.80</FatsPr>
+	</Product>
+	<Product>
+		<Id>2</Id>
+		<Name>Avocado</Name>
+		<CarbsPr>0.40</CarbsPr>
+		<ProteinsPr>0.30</ProteinsPr>
+		<FatsPr>0.80</FatsPr>
+	</Product>
+</Products>

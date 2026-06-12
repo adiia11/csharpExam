@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Patients>
+	<Patient>
+		<Id>1</Id>
+		<LastName>Verbova</LastName>
+		<CarbsNorm>200</CarbsNorm>
+		<ProteinsNorm>170</ProteinsNorm>
+		<FatsNorm>150</FatsNorm>
+	</Patient>
+	<Patient>
+		<Id>2</Id>
+		<LastName>Aria</LastName>
+		<CarbsNorm>10</CarbsNorm>
+		<ProteinsNorm>170</ProteinsNorm>
+		<FatsNorm>100</FatsNorm>
+	</Patient>
+
+</Patients>

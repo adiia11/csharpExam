@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProductStatistic>
+  <Products>
+    <Name>Avocado</Name>
+    <Patient PersonalConWeight="130">
+      <LastName>Verbova</LastName>
+    </Patient>
+    <Patient PersonalConWeight="80">
+      <LastName>Aria</LastName>
+    </Patient>
+  </Products>
+  <Products>
+    <Name>Nut</Name>
+    <Patient PersonalConWeight="40">
+      <LastName>Aria</LastName>
+    </Patient>
+  </Products>
+</ProductStatistic>

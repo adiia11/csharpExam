@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Infos>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>1</PatientId>
+		<ProductId>2</ProductId>
+		<Weight>50</Weight>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>1</PatientId>
+		<ProductId>2</ProductId>
+		<Weight>55</Weight>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>2</PatientId>
+		<ProductId>1</ProductId>
+		<Weight>20</Weight>
+	</Info>
+	<Info>
+		<Date>2026-06-03</Date>
+		<PatientId>2</PatientId>
+		<ProductId>2</ProductId>
+		<Weight>40</Weight>
+	</Info>
+</Infos>
