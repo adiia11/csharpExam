@@ -2,7 +2,7 @@
 <Patients>
 	<Patient>
 		<Id>1</Id>
-		<LastName>Verbova</LastName>
+		<LastName>Smith</LastName>
 		<CarbsNorm>200</CarbsNorm>
 		<ProteinsNorm>170</ProteinsNorm>
 		<FatsNorm>150</FatsNorm>
