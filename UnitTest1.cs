@@ -15,7 +15,7 @@ namespace TestProject1
 <Patients>
 	<Patient>
 		<Id>1</Id>
-		<LastName>Verbova</LastName>
+		<LastName>Smith</LastName>
 		<CarbsNorm>200</CarbsNorm>
 		<ProteinsNorm>170</ProteinsNorm>
 		<FatsNorm>150</FatsNorm>
@@ -122,7 +122,7 @@ namespace TestProject1
   <Products>
     <Name>Avocado</Name>
     <Patient PersonalConWeight=""130"">
-      <LastName>Verbova</LastName>
+      <LastName>Smith</LastName>
     </Patient>
     <Patient PersonalConWeight=""80"">
       <LastName>Aria</LastName>
@@ -144,7 +144,7 @@ namespace TestProject1
             var exTree = XElement.Parse(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <PatientsStatistic>
   <Patients>
-    <LastName>Verbova</LastName>
+    <LastName>Smith</LastName>
     <Dates Date=""2026-06-03"" ConsumedCarbs=""42.00"" ConsumedProteins=""31.50"" ConsumedFats=""84.00"" />
     <Dates Date=""2026-06-06"" ConsumedCarbs=""10.00"" ConsumedProteins=""7.50"" ConsumedFats=""20.00"" />
   </Patients>
