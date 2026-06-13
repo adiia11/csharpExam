@@ -130,7 +130,7 @@ PATIENTS
 <Patients>
 	<Patient>
 		<Id>1</Id>
-		<LastName>Verbova</LastName>
+		<LastName>Smith</LastName>
 		<CarbsNorm>20</CarbsNorm>
 		<ProteinsNorm>50</ProteinsNorm>
 		<FatsNorm>29</FatsNorm>
@@ -226,7 +226,7 @@ TASKa:
     <Date>2026-06-06</Date>
   </Patients>
   <Patients>
-    <Patient>Verbova</Patient>
+    <Patient>Smith</Patient>
     <Date>2026-06-06</Date>
   </Patients>
 </PatientStat>
@@ -272,7 +272,7 @@ namespace NutritionTesting
 <Patients>
 	<Patient>
 		<Id>1</Id>
-		<LastName>Verbova</LastName>
+		<LastName>Smith</LastName>
 		<CarbsNorm>20</CarbsNorm>
 		<ProteinsNorm>50</ProteinsNorm>
 		<FatsNorm>29</FatsNorm>
@@ -382,7 +382,7 @@ namespace NutritionTesting
     <Date>2026-06-06</Date>
   </Patients>
   <Patients>
-    <Patient>Verbova</Patient>
+    <Patient>Smith</Patient>
     <Date>2026-06-06</Date>
   </Patients>
 </PatientStat>");
