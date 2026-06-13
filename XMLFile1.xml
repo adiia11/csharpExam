@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Passengers>
+
+	<Passenger>
+
+		<Id>1</Id>
+
+		<LastName>Verbova</LastName>
+
+	</Passenger>
+
+	<Passenger>
+
+		<Id>2</Id>
+
+		<LastName>Aria</LastName>
+
+	</Passenger>
+
+</Passengers>
+<Routes>
+
+	<Route>
+
+		<Id>1</Id>
+
+		<RouteName>Lviv-Kyiv</RouteName>
+
+		<TicketPrice>500</TicketPrice>
+
+	</Route>
+
+	<Route>
+
+		<Id>2</Id>
+
+		<RouteName>Lviv-Odesa</RouteName>
+
+		<TicketPrice>700</TicketPrice>
+
+	</Route>
+
+</Routes>
+<Services>
+
+	<Service>
+
+		<Id>101</Id>
+
+		<ServiceName>Wifi</ServiceName>
+
+		<ServicePrice>50</ServicePrice>
+
+	</Service>
+
+</Services>
+<Tickets>
+
+	<Ticket>
+
+		<Date>2026-06-12</Date>
+
+		<TrainId>1</TrainId>
+
+		<PassengerId>1</PassengerId>
+
+		<ServiceId>101</ServiceId>
+
+	</Ticket>
+
+</Tickets>
