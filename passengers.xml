@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Passengers>
+	<Passenger>
+		<Id>1</Id>
+		<LastName>Berva</LastName>
+		<MaxLimSpent>50</MaxLimSpent>
+	</Passenger>
+	<Passenger>
+		<Id>2</Id>
+		<LastName>Aerbova</LastName>
+		<MaxLimSpent>40</MaxLimSpent>
+	</Passenger>
+<Passenger>
+	<Id>3</Id>
+	<LastName>Smith</LastName>
+	<MaxLimSpent>40</MaxLimSpent>
+</Passenger>
+</Passengers>

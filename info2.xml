@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Infos>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PassengerId>1</PassengerId>
+		<RouteId>1</RouteId>
+		<Count>2</Count>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PassengerId>2</PassengerId>
+		<RouteId>1</RouteId>
+		<Count>4</Count>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PassengerId>2</PassengerId>
+		<RouteId>2</RouteId>
+		<Count>10</Count>
+	</Info>
+	<Info>
+		<Date>2026-06-06</Date>
+		<PassengerId>3</PassengerId>
+		<RouteId>2</RouteId>
+		<Count>15</Count>
+	</Info>
+</Infos>
